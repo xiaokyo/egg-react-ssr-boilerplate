@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: CI_PROJECT_NAME
+  labels:
+    app: CI_PROJECT_NAME
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: CI_PROJECT_NAME
+      labels:
+        app: CI_PROJECT_NAME
+    spec:
+      containers:
+        - name: CI_PROJECT_NAME
+          image: reg.amgzs.cn/cckj/CI_PROJECT_NAME:VERSION
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: CONTEXT_PATH/ischeck
+              port: HTTP_PORT
+              scheme: HTTP
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "2"
+            requests:
+              memory: "500Mi"
+              cpu: "50m"
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: CI_PROJECT_NAME

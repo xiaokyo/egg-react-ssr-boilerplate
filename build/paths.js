@@ -1,17 +1,17 @@
-'use strict'
+'use strict';
 
-const path = require('path')
-const fs = require('fs')
+const path = require('path');
+const fs = require('fs');
 
 // Make sure any symlinks in the project folder are resolved:
 // https://github.com/facebook/create-react-app/issues/637
-const appDirectory = fs.realpathSync(process.cwd())
-const resolveApp = relativePath => path.resolve(appDirectory, relativePath)
+const appDirectory = fs.realpathSync(process.cwd());
+const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
 
-const envPublicUrl = process.env.PUBLIC_URL
+const envPublicUrl = process.env.PUBLIC_URL;
 
 const getPublicUrl = appPackageJson =>
-  envPublicUrl || require(appPackageJson).homepage
+  envPublicUrl || require(appPackageJson).homepage;
 
 const moduleFileExtensions = [
   'web.mjs',
@@ -24,8 +24,8 @@ const moduleFileExtensions = [
   'tsx',
   'json',
   'web.jsx',
-  'jsx'
-]
+  'jsx',
+];
 
 // config after eject: we're in ./config/
 module.exports = {
@@ -40,7 +40,7 @@ module.exports = {
   layout: resolveApp('web/layout'),
   appNodeModules: resolveApp('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
-  resolveApp: resolveApp
-}
+  resolveApp: resolveApp,
+};
 
-module.exports.moduleFileExtensions = moduleFileExtensions
+module.exports.moduleFileExtensions = moduleFileExtensions;

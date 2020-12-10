@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  generation: 1
+  labels:
+    cattle.io/creator: norman
+  name: CI_COMMIT_REF_NAME.CI_PROJECT_NAME.CI_PROJECT_NAMESPACE.cj.com
+spec:
+  rules:
+    - host: CI_COMMIT_REF_NAME.CI_PROJECT_NAME.CI_PROJECT_NAMESPACE.cj.com
+      http:
+        paths:
+          - backend:
+              servicePort: HTTP_PORT
+              serviceName: CI_PROJECT_NAME_SVC-svc
+            path: CONTEXT_PATH

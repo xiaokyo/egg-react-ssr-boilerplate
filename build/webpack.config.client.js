@@ -1,22 +1,27 @@
-'use strict'
+'use strict';
 
-const path = require('path')
-const webpack = require('webpack')
-const merge = require('webpack-merge')
-const TerserPlugin = require('terser-webpack-plugin')
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-const ManifestPlugin = require('webpack-manifest-plugin')
-const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin')
-const safePostCssParser = require('postcss-safe-parser')
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const paths = require('./paths')
-const baseConfig = require('./webpack.config.base')
-const { resolveApp } = require('./paths')
-const publicPath = '/'
-const isDev = process.env.NODE_ENV === 'development'
-const shouldUseSourceMap = isDev || process.env.GENERATE_SOURCEMAP
-const devtool = isDev ? 'cheap-module-source-map' : (shouldUseSourceMap ? 'source-map' : false)
+const path = require('path');
+const webpack = require('webpack');
+const merge = require('webpack-merge');
+const TerserPlugin = require('terser-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
+const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
+const safePostCssParser = require('postcss-safe-parser');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin;
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const paths = require('./paths');
+const baseConfig = require('./webpack.config.base');
+const { resolveApp } = require('./paths');
+const publicPath = '/';
+const isDev = process.env.NODE_ENV === 'development';
+const shouldUseSourceMap = isDev || process.env.GENERATE_SOURCEMAP;
+const devtool = isDev
+  ? 'cheap-module-source-map'
+  : shouldUseSourceMap
+    ? 'source-map'
+    : false;
 
 const optimization = {
   runtimeChunk: true,
@@ -25,45 +30,47 @@ const optimization = {
     name: false,
     cacheGroups: {
       vendors: {
-        test: (module) => {
-          return module.resource &&
+        test: module => {
+          return (
+            module.resource &&
             /\.js$/.test(module.resource) &&
             module.resource.match('node_modules')
+          );
         },
-        name: 'vendor'
-      }
-    }
-  }
-}
+        name: 'vendor',
+      },
+    },
+  },
+};
 
 if (!isDev) {
   optimization.minimizer = [
     new TerserPlugin({
       terserOptions: {
         parse: {
-          ecma: 8
+          ecma: 8,
         },
         compress: {
           ecma: 5,
           warnings: false,
           comparisons: false,
-          inline: 2
+          inline: 2,
         },
         mangle: {
-          safari10: true
+          safari10: true,
         },
         output: {
           ecma: 5,
           comments: false,
-          ascii_only: true
-        }
+          ascii_only: true,
+        },
       },
       // Use multi-process parallel running to improve the build speed
       // Default number of concurrent runs: os.cpus().length - 1
       parallel: true,
       // Enable file caching
       cache: true,
-      sourceMap: shouldUseSourceMap
+      sourceMap: shouldUseSourceMap,
     }),
     new OptimizeCSSAssetsPlugin({
       cssProcessorOptions: {
@@ -75,47 +82,47 @@ if (!isDev) {
             inline: false,
             // `annotation: true` appends the sourceMappingURL to the end of
             // the css file, helping the browser find the sourcemap
-            annotation: true
+            annotation: true,
           }
-          : false
-      }
-    })
-  ]
+          : false,
+      },
+    }),
+  ];
 }
 
-const node_env = process.env.NODE_ENV || 'development'
+const node_env = process.env.NODE_ENV || 'development';
 const plugins = [
   new webpack.DefinePlugin({
     '__isBrowser__': true, // eslint-disable-line
-    '__ENV__': JSON.stringify(node_env)
+    __ENV__: JSON.stringify(node_env),
   }),
   new ModuleNotFoundPlugin(paths.appPath),
   new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   new ManifestPlugin({
     fileName: 'asset-manifest.json',
-    publicPath: publicPath
+    publicPath: publicPath,
   }),
   new HtmlWebpackPlugin({
     filename: 'micro.html',
     template: resolveApp('micro.html'),
-    chunks: ['Micro']
-  })
-]
+    chunks: ['Micro'],
+  }),
+];
 
 if (process.env.npm_config_report === 'true') {
-  plugins.push(new BundleAnalyzerPlugin())
+  plugins.push(new BundleAnalyzerPlugin());
 }
 module.exports = merge(baseConfig, {
   devtool: devtool,
   entry: {
     Page: [require.resolve('@babel/polyfill'), paths.entry],
-    Micro: [require.resolve('@babel/polyfill'), paths.microEntry]
+    Micro: [require.resolve('@babel/polyfill'), paths.microEntry],
   },
   resolve: {
     alias: {
       // for this issue https://github.com/ykfe/egg-react-ssr/issues/36
-      'react-router': require.resolve('react-router')
-    }
+      'react-router': require.resolve('react-router'),
+    },
   },
   output: {
     path: paths.appBuild,
@@ -125,7 +132,7 @@ module.exports = merge(baseConfig, {
     publicPath: publicPath,
     hotUpdateChunkFilename: '[hash].hot-update.js',
     devtoolModuleFilenameTemplate: info =>
-      path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')
+      path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
   },
   optimization: optimization,
   plugins: plugins.filter(Boolean),
@@ -134,7 +141,7 @@ module.exports = merge(baseConfig, {
     fs: 'empty',
     net: 'empty',
     tls: 'empty',
-    child_process: 'empty'
+    child_process: 'empty',
   },
-  performance: false
-})
+  performance: false,
+});

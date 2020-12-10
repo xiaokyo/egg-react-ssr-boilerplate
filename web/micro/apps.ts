@@ -1,1 +1,1 @@
-export default ['service', 'commodity']
+export default ['service', 'commodity'];

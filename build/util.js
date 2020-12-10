@@ -1,20 +1,20 @@
-const paths = require('./paths')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const publicPath = paths.servedPath
-const shouldUseRelativeAssetPaths = publicPath === './'
-const isDev = process.env.NODE_ENV === 'development'
+const paths = require('./paths');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const publicPath = paths.servedPath;
+const shouldUseRelativeAssetPaths = publicPath === './';
+const isDev = process.env.NODE_ENV === 'development';
 const getStyleLoaders = (cssOptions, preProcessor) => {
   const loaders = [
     {
       loader: MiniCssExtractPlugin.loader,
       options: Object.assign(
         {},
-        shouldUseRelativeAssetPaths ? { publicPath: '../../' } : undefined
-      )
+        shouldUseRelativeAssetPaths ? { publicPath: '../../' } : undefined,
+      ),
     },
     {
       loader: require.resolve('css-loader'),
-      options: cssOptions
+      options: cssOptions,
     },
     {
       loader: require.resolve('postcss-loader'),
@@ -24,24 +24,24 @@ const getStyleLoaders = (cssOptions, preProcessor) => {
           require('postcss-flexbugs-fixes'),
           require('postcss-preset-env')({
             autoprefixer: {
-              flexbox: 'no-2009'
+              flexbox: 'no-2009',
             },
-            stage: 3
-          })
-        ]
-      }
-    }
-  ]
+            stage: 3,
+          }),
+        ],
+      },
+    },
+  ];
   if (isDev) {
-    loaders.unshift(require.resolve('css-hot-loader'))
+    loaders.unshift(require.resolve('css-hot-loader'));
   }
   if (preProcessor) {
     // 添加额外的loader
-    let preloader = require.resolve(preProcessor)
-    loaders.push(preloader)
+    let preloader = require.resolve(preProcessor);
+    loaders.push(preloader);
   }
-  return loaders
-}
+  return loaders;
+};
 module.exports = {
-  getStyleLoaders
-}
+  getStyleLoaders,
+};

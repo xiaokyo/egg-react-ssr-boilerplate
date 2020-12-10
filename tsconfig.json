@@ -2,9 +2,7 @@
   "compileOnSave": true,
   "compilerOptions": {
     "esModuleInterop": true,
-    "lib": [
-      "esnext"
-    ],
+    "lib": ["esnext"],
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,

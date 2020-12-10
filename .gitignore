@@ -15,3 +15,5 @@ run/
 .tsbuildinfo
 .tsbuildinfo.*
 .serverBundle
+.history
+src/app/public/themes/*

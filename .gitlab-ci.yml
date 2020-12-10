@@ -1,0 +1,67 @@
+image: node:12
+
+cache: #https://docs.gitlab.com/ee/ci/yaml/README.html#cache
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+stages:
+  - buildTest
+  - buildRelease
+  - deploy
+# 构建 Job
+
+buildTest:
+  stage: buildTest
+  tags:
+  #  - maven
+  artifacts:
+    paths:
+      - dist/
+  only:
+    - master
+  script:
+    - npm config set registry http://registry.npm.taobao.org/ && npm i
+    # - npm run reportWorlds:test && npm run pullWorlds:test
+    - npm run-script build:test
+
+buildRelease:
+  stage: buildRelease
+  tags:
+  #  - maven
+  artifacts:
+    paths:
+      - dist/
+  only:
+    - release
+  script:
+    - npm config set registry http://registry.npm.taobao.org/ && npm i
+    # - npm run reportWorlds:release && npm run pullWorlds:release
+    - npm run-script build:release
+
+deploy:
+  stage: deploy
+  image: reg.amgzs.cn/cckj/admin/mdk:latest
+  only:
+    - master
+    - release
+  dependencies:
+    - buildTest
+    - buildRelease
+  script:
+    - echo "发布到k8s测试环境"
+    - export dockerversion=$CI_COMMIT_REF_NAME`date '+%Y%m%d%H%M%S'`
+    - export HTTP_PORT=9000
+    - export CONTEXT_PATH=
+    - export CI_PROJECT_NAMESPACE=${CI_PROJECT_NAMESPACE//\//-}
+    - echo ${CI_PROJECT_NAMESPACE}
+    - mv docker/* ./
+    - docker build -t reg.amgzs.cn/cckj/${CI_PROJECT_NAME}:$dockerversion .
+    - docker push reg.amgzs.cn/cckj/${CI_PROJECT_NAME}:$dockerversion
+    - kubectl create namespace $CI_PROJECT_NAMESPACE-$CI_COMMIT_REF_NAME || echo "命名空间已经存在"
+    - cat deployment.yaml | sed 's/CI_PROJECT_NAME/'"${CI_PROJECT_NAME}"'/g' | sed 's/VERSION/'"${dockerversion}"'/g' | sed 's/HTTP_PORT/'"${HTTP_PORT}"'/g' | sed -e 's\CONTEXT_PATH\'"${CONTEXT_PATH}"'\g' >k8s-deployment.yaml
+    - kubectl -n  $CI_PROJECT_NAMESPACE-$CI_COMMIT_REF_NAME apply -f k8s-deployment.yaml
+    - cat Ingress.yaml | sed 's/CI_PROJECT_NAME_SVC/'"${CI_PROJECT_NAME}"'/g' | sed 's/CI_PROJECT_NAMESPACE/'"${CI_PROJECT_NAMESPACE//-/}"'/g' | sed 's/CI_PROJECT_NAME/'"${CI_PROJECT_NAME//-/}"'/g' | sed 's/CI_COMMIT_REF_NAME/'"${CI_COMMIT_REF_NAME}"'/g'| sed 's/HTTP_PORT/'"${HTTP_PORT}"'/g' | sed -e 's\CONTEXT_PATH\'"${CONTEXT_PATH}"'\g' >k8s-Ingress.yaml
+    - kubectl -n  $CI_PROJECT_NAMESPACE-$CI_COMMIT_REF_NAME apply -f k8s-Ingress.yaml
+    - cat svc.yaml | sed 's/CI_PROJECT_NAME/'"${CI_PROJECT_NAME}"'/g'| sed 's/HTTP_PORT/'"${HTTP_PORT}"'/g' >k8s-svc.yaml
+    - kubectl -n  $CI_PROJECT_NAMESPACE-$CI_COMMIT_REF_NAME apply -f k8s-svc.yaml

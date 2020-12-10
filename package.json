@@ -1,9 +1,10 @@
 {
-  "name": "ssr-with-ts",
+  "name": "saas-buyer",
   "version": "2.3.16",
-  "description": "ykfe",
+  "description": "Saas Buyer",
   "dependencies": {
     "antd": "^4.9.1",
+    "antd-theme-webpack-plugin": "^1.3.7",
     "crypto-js": "^4.0.0",
     "egg-scripts": "^2.13.0",
     "i18next": "^19.8.4",
@@ -12,6 +13,7 @@
     "i18next-http-middleware": "^3.0.6",
     "js-base64": "^3.6.0",
     "midway": "^1.0.0",
+    "prettier": "^1.19.1",
     "qiankun": "^2.3.2",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
@@ -32,6 +34,7 @@
     "@types/react-router-dom": "^5.1.0",
     "@types/serialize-javascript": "^1.5.0",
     "@types/store": "^2.0.2",
+    "antd-theme-generator": "^1.2.8",
     "babel-loader": "8.0.4",
     "babel-plugin-import": "^1.13.3",
     "babel-preset-react-app": "^9.0.2",
@@ -39,6 +42,7 @@
     "cross-env": "^5.2.0",
     "css-hot-loader": "^1.4.3",
     "css-loader": "1.0.0",
+    "cssnano": "^4.1.10",
     "egg-proxy": "^1.1.0",
     "file-loader": "2.0.0",
     "html-webpack-plugin": "^4.5.0",
@@ -71,13 +75,18 @@
     "node": ">=10.16.0"
   },
   "scripts": {
-    "prod": "npm run build && cross-env NODE_ENV=production egg-scripts start --title=egg-server-ssr-with-ts --framework=midway --ts",
-    "start": "concurrently \"npm run ssr\" \"npm run csr\"",
+    "prod": "cross-env NODE_ENV=production egg-scripts start --port=9000 --daemon --title=egg-server-saas-buyer --framework=midway --ts",
+    "stop": "egg-scripts stop",
+    "start": "concurrently \"npm run theme\" \"npm run ssr\" \"npm run csr\"",
     "ssr": "concurrently \"cross-env NODE_ENV=development midway-bin dev --ts\" \"cross-env NODE_ENV=development webpack --watch --config ./build/webpack.config.server.js\"",
     "csr": "cross-env NODE_ENV=development ykcli dev",
-    "build": "midway-bin build -c && npm run build:ssr && npm run build:csr",
-    "build:ssr": "cross-env NODE_ENV=production webpack --config ./build/webpack.config.server.js",
-    "build:csr": "cross-env NODE_ENV=production ykcli build"
+    "build": "cross-env NODE_ENV=production concurrently \"npm run theme\"  \"midway-bin build -c\" \"npm run build:ssr\" \"npm run build:csr\"",
+    "build:test": "cross-env NODE_ENV=test BABEL_ENV=production concurrently \"npm run theme\"  \"midway-bin build -c\" \"npm run build:ssr\" \"npm run build:csr\"",
+    "build:release": "cross-env NODE_ENV=release BABEL_ENV=production concurrently \"npm run theme\"  \"midway-bin build -c\" \"npm run build:ssr\" \"npm run build:csr\"",
+    "build:ssr": "webpack --config ./build/webpack.config.server.js",
+    "build:csr": "ykcli build",
+    "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'",
+    "theme": "node ./build/buildTheme.js"
   },
   "midway-bin-clean": [
     ".vscode/.tsbuildinfo",

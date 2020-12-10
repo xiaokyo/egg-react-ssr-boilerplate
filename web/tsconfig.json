@@ -2,10 +2,7 @@
 {
   "compilerOptions": {
     "esModuleInterop": true,
-    "lib": [
-      "esnext",
-      "dom"
-    ],
+    "lib": ["esnext", "dom"],
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -22,6 +19,10 @@
     "strictPropertyInitialization": false,
     "stripInternal": true,
     "target": "es5",
-    "jsx": "react"
+    "jsx": "react",
+    "baseUrl": "../",
+    "paths": {
+      "@/*":["web/*"]
+    }
   }
 }

@@ -1,10 +1,10 @@
-'use strict'
+'use strict';
 
-const paths = require('./paths')
+const paths = require('./paths');
 // style files regexes
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent')
-const getStyleLoaders = require('./util').getStyleLoaders
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
+const getStyleLoaders = require('./util').getStyleLoaders;
 const webpackModule = {
   strictExportPresence: true,
   rules: [
@@ -16,8 +16,8 @@ const webpackModule = {
           loader: require.resolve('url-loader'),
           options: {
             limit: 10000,
-            name: 'static/media/[name].[hash:8].[ext]'
-          }
+            name: 'static/media/[name].[hash:8].[ext]',
+          },
         },
         {
           test: /\.(js|mjs|jsx|ts|tsx)$/,
@@ -30,84 +30,87 @@ const webpackModule = {
               [
                 require.resolve('@babel/preset-env'),
                 {
-                  modules: false
-                }
+                  modules: false,
+                },
               ],
-              ['react-app', { flow: false, typescript: true }]
+              ['react-app', { flow: false, typescript: true }],
             ],
             plugins: [
-            ]
-          }
-        },
-        {
-          test: /\.css$/,
-          exclude: /\.module\.css$/,
-          use: getStyleLoaders({
-            importLoaders: 1
-          })
-        },
-        {
-          test: /\.module\.css$/,
-          use: getStyleLoaders({
-            importLoaders: 1,
-            modules: true,
-            getLocalIdent: getCSSModuleLocalIdent
-          })
+              // ['import', { libraryName: 'antd', libraryDirectory: "lib", style: "css" }]
+            ],
+          },
         },
         {
           test: /\.less$/,
+          include: /(web)/,
           exclude: /\.module\.less$/,
           use: getStyleLoaders(
             {
               importLoaders: 2,
-              localIdentName: '[local]'
+              localIdentName: '[local]',
             },
-            'less-loader'
+            'less-loader',
           ),
-          sideEffects: true
+          sideEffects: true,
+        },
+        {
+          test: /\.less$/,
+          include: /(node_modules)/,
+          exclude: /\.module\.less$/,
+          use: [
+            ...getStyleLoaders({
+              importLoaders: 1,
+            }),
+            {
+              loader: require.resolve('less-loader'),
+              options: {
+                javascriptEnabled: true,
+              },
+            },
+          ],
         },
         {
           test: /\.module\.less$/,
+          include: /(web)/,
           use: getStyleLoaders(
             {
               importLoaders: 2,
               modules: true,
-              getLocalIdent: getCSSModuleLocalIdent
+              getLocalIdent: getCSSModuleLocalIdent,
             },
-            'less-loader'
-          )
+            'less-loader',
+          ),
         },
         {
           exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
           loader: require.resolve('file-loader'),
           options: {
-            name: 'static/media/[name].[hash:8].[ext]'
-          }
-        }
-      ]
-    }
-  ]
-}
+            name: 'static/media/[name].[hash:8].[ext]',
+          },
+        },
+      ],
+    },
+  ],
+};
 
 module.exports = {
   stats: {
     children: false,
-    entrypoints: false
+    entrypoints: false,
   },
-  mode: process.env.NODE_ENV,
+  mode: process.env.NODE_ENV === "development" ? "development" : "production",
   resolve: {
     alias: {
-      '@': paths.appSrc
+      '@': paths.appSrc,
     },
-    extensions: paths.moduleFileExtensions
-      .map(ext => `.${ext}`)
+    extensions: paths.moduleFileExtensions.map(ext => `.${ext}`),
   },
   module: webpackModule,
   plugins: [
     new MiniCssExtractPlugin({
       filename: 'static/css/[name].css',
-      chunkFilename: 'static/css/[name].chunk.css'
-    })
+      chunkFilename: 'static/css/[name].chunk.css',
+    }),
   ],
-  performance: false
-}
+  performance: false,
+};

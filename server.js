@@ -1,1 +1,1 @@
-require('midway/server')
+require('midway/server');

@@ -1,33 +1,34 @@
-import { provide } from 'midway'
-import { IApiService, IApiResult } from '../interface'
+import { provide } from 'midway';
+import { IApiService, IApiResult } from '../interface';
 
 @provide('ApiService')
 export class ApiService implements IApiService {
-
   index(): Promise<IApiResult> {
     return Promise.resolve({
       news: [
         {
           id: '1',
-          title: 'Racket v7.3 Release Notes'
+          title: 'Racket v7.3 Release Notes',
         },
         {
           id: '2',
-          title: 'Free Dropbox Accounts Now Only Sync to Three Devices'
+          title: 'Free Dropbox Accounts Now Only Sync to Three Devices',
         },
         {
           id: '3',
-          title: 'Voynich Manuscript Decoded by Bristol Academic'
+          title: 'Voynich Manuscript Decoded by Bristol Academic',
         },
         {
           id: '4',
-          title: 'Burger King to Deliver Whoppers to LA Drivers Stuck in Traffic'
+          title:
+            'Burger King to Deliver Whoppers to LA Drivers Stuck in Traffic',
         },
         {
           id: '5',
-          title: 'How much do YouTube celebrities charge to advertise your product? '
-        }
-      ]
-    })
+          title:
+            'How much do YouTube celebrities charge to advertise your product? ',
+        },
+      ],
+    });
   }
 }
